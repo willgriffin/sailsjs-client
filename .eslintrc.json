@@ -1,0 +1,75 @@
+{
+  "env": { 
+    "es6": true,
+    "browser": false,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["promise"],
+  "rules": {
+    "indent": ["error", 2, {
+      "MemberExpression": "off",
+      "SwitchCase": 1,
+      "ArrayExpression": 1,
+      "ObjectExpression": 1
+    }],
+    "linebreak-style": ["error", "unix"],
+    "no-semi": ["error", "always"],
+    "no-cond-assign": ["error", "always"],
+    "no-console": "off",
+    "no-var": "error",    
+    "object-shorthand": ["error", "methods"],
+    "object-curly-spacing": ["error", "never"],
+    "array-bracket-spacing": ["error", "never", {
+      "objectsInArrays": false 
+    }],
+    "array-element-newline": ["error", "consistent"],
+    "array-bracket-newline": ["error", { "multiline": true }],
+    "quotes": ["error", "single", {
+      "allowTemplateLiterals": true
+    }],
+    "comma-dangle": ["error", {
+      "arrays": "never",
+      "objects": "never",
+      "imports": "never",
+      "exports": "never",
+      "functions": "ignore"
+    }],
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "space-before-function-paren": ["error", {
+      "anonymous": "never",
+      "named": "never",
+      "asyncArrow": "never"
+    }],
+    "keyword-spacing": ["error", { 
+      "overrides": {
+      "if": { "after": true },
+      "for": { "after": true },
+      "while": { "after": true }
+      } 
+    }],
+    "arrow-parens": [2, "as-needed", { 
+      "requireForBlockBody": true 
+    }],
+    "no-multi-spaces": "error",
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 0}],
+    "promise/always-return": "off",
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error",
+    "promise/catch-or-return": "off",
+    "promise/no-native": "off",
+    "promise/no-nesting": "off",
+    "promise/no-promise-in-callback": "warn",
+    "promise/no-callback-in-promise": "off",
+    "promise/avoid-new": "off",
+    "promise/no-new-statics": "error",
+    "promise/no-return-in-finally": "warn",
+    "promise/valid-params": "warn"
+  }
+}

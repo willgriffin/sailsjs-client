@@ -1,0 +1,43 @@
+{
+  "name": "sailsjs-client",
+  "version": "0.0.0",
+  "description": "api client with websocket support",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --timeout 5000 --require @babel/register --require @babel/polyfill --exit --recursive ./test/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willgriffin/sailsjs-client.git"
+  },
+  "keywords": [
+    "api",
+    "websockets",
+    "socket.io",
+    "sails.js"
+  ],
+  "author": "will griffin <willgriffin@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/willgriffin/sailsjs-client/issues"
+  },
+  "homepage": "https://github.com/willgriffin/sailsjs-client#readme",
+  "dependencies": {
+    "request": "^2.88.0",
+    "sails.io.js": "^1.2.1",
+    "socket.io-client": "^2.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/register": "^7.4.0",
+    "chai": "^4.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "mocha": "^5.2.0",
+    "sails": "^1.1.0",
+    "sails-hook-sockets": "^1.5.5"
+  }
+}
