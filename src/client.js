@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 import request from 'request'
 import SocketIo from 'socket.io-client'
 import SailsIo from 'sails.io.js'
