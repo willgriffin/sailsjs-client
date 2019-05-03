@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/willgriffin/sailsjs-client#readme",
   "dependencies": {
+    "@babel/polyfill": "^7.4.3",
     "request": "^2.88.0",
     "sails.io.js": "^1.2.1",
     "socket.io-client": "^2.2.0"
@@ -32,7 +33,6 @@
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
     "@babel/node": "^7.2.2",
-    "@babel/polyfill": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@babel/register": "^7.4.0",
     "chai": "^4.2.0",
