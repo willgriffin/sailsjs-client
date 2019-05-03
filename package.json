@@ -2,9 +2,10 @@
   "name": "sailsjs-client",
   "version": "0.0.0",
   "description": "api client with websocket support",
-  "main": "src/client.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout 5000 --require @babel/register --require @babel/polyfill --exit --recursive ./test/**/*.js"
+    "test": "./node_modules/.bin/mocha --timeout 5000 --require @babel/register --require @babel/polyfill --exit --recursive ./test/**/*.js",
+    "build": "./node_modules/.bin/babel src/client.js -o dist/index.js"
   },
   "repository": {
     "type": "git",
