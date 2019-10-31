@@ -1,11 +1,18 @@
-import "@babel/polyfill";
-import request from 'request'
-import SocketIo from 'socket.io-client'
-import SailsIo from 'sails.io.js'
+import * as request from 'request'
+import * as SocketIo from 'socket.io-client'
+import * as SailsIo from 'sails.io.js'
 import { URL } from 'url';
 
-class SailsClient {
-	
+export default class SailsClient {
+	url: URL
+	auth: any
+	reconnect: boolean
+	socket: any
+	cookies: any
+	endpoint: any
+	io: any
+	listeners: Array<{event: string, method: any}>
+
 	constructor(args) {
 		this.url = new URL(args.url || 'http://localhost:1337/api/')
 		if (this.url.protocol === null) {
@@ -50,7 +57,14 @@ class SailsClient {
 		this.cookies = response.headers['set-cookie']
 	}
 
-	async authenticate(auth) {
+	async authenticate(auth?: {
+		endpoint: string,
+		usernameField: string,
+		passwordField: string,
+		username: string,
+		password: string,
+		response: any
+	}) {
 		const response = await this.post(auth.endpoint, {
 			[auth.usernameField]: auth.username,
 			[auth.passwordField]: auth.password
@@ -59,7 +73,7 @@ class SailsClient {
 		return auth
 	}
 
-	async get(path, params) {
+	async get(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'GET',
@@ -69,7 +83,7 @@ class SailsClient {
 		return response.body
 	}
 	
-	async post(path, params) {
+	async post(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'POST',
@@ -79,7 +93,7 @@ class SailsClient {
 		return response.body
 	}
 
-	async put(path, params) {
+	async put(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'PUT',
@@ -89,7 +103,7 @@ class SailsClient {
 		return response.body
 	}
 
-	async patch(path, params) {
+	async patch(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'PATCH',
@@ -99,7 +113,7 @@ class SailsClient {
 		return response.body
 	}
 
-	async delete(path, params) {
+	async delete(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'DELETE',
@@ -202,5 +216,3 @@ class SailsClient {
 		})
 	}
 }
-
-export default SailsClient

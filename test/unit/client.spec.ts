@@ -1,9 +1,9 @@
 
-import Sails from 'sails'
-import SHSockets from 'sails-hook-sockets'
-import jwt from 'jsonwebtoken'
+import * as Sails from 'sails'
+import * as SHSockets from 'sails-hook-sockets'
+import * as jwt from 'jsonwebtoken'
 import { expect } from 'chai';  // Using Expect style
-import SailsClient from '../../src/client.js'
+import SailsClient from '../../src/client'
 
 
 let api, app;
@@ -63,14 +63,14 @@ describe('client.spec.js', () => {
 					return res.badRequest();
 				}
 				const roomName = req.param('room');
-				sails.sockets.join(req, roomName, (err) => {
-					if (err) {
-						return res.serverError(err);
-					}
-					return res.json({
-						message: 'Joined ' + roomName
-					});
-				});
+				// sails.sockets.join(req, roomName, (err) => {
+				// 	if (err) {
+				// 		return res.serverError(err);
+				// 	}
+				// 	return res.json({
+				// 		message: 'Joined ' + roomName
+				// 	});
+				// });
 			})
 
 			app.post('/api/socket/blast', (req, res) => {
@@ -103,6 +103,11 @@ describe('client.spec.js', () => {
 		return ok;
 	});
 	
+	after(async () => {
+		await api.disconnect()
+		await app.lower()
+	})
+
 	it('should able to make an xhr request', async () => {
 		const response = await api.xhrRequest({
 			uri: 'http://localhost:13666/api/request',
