@@ -4,6 +4,7 @@ import * as SailsIo from 'sails.io.js'
 import { URL } from 'url';
 
 export default class SailsClient {
+
 	url: URL
 	auth: any
 	reconnect: boolean
@@ -40,7 +41,7 @@ export default class SailsClient {
 		}
 	}
 	
-	on(event, method) {
+	on(event: string, method: Function) {
 		this.listeners.push({
 			event, method
 		})
