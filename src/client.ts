@@ -1,7 +1,8 @@
-import * as request from 'request'
+import * as rp from 'request-promise'
 import * as SocketIo from 'socket.io-client'
 import * as SailsIo from 'sails.io.js'
 import { URL } from 'url';
+
 
 export default class SailsClient {
 
@@ -13,8 +14,14 @@ export default class SailsClient {
 	endpoint: any
 	io: any
 	listeners: Array<{event: string, method: any}>
+	token: string
 
-	constructor(args) {
+	constructor(args: {
+		url?: string,
+		protocol?: string,
+		auth?: any,
+		token?: string
+	}) {
 		this.url = new URL(args.url || 'http://localhost:1337/api/')
 		if (this.url.protocol === null) {
 			throw new Error('Invalid url');
@@ -27,6 +34,9 @@ export default class SailsClient {
 				usernameField: args.auth.usernameField || 'email',
 				passwordField: args.auth.passwordField || 'password'
 			}
+		}
+		if (args.token) {
+			this.setToken(args.token)
 		}
 		this.reconnect = true;
 		this.listeners = [];
@@ -49,8 +59,13 @@ export default class SailsClient {
 			this.socket.on(event, method)
 		}
 	}
-
-	async getCookie() {
+	public setToken(token: string) {
+		this.token = token
+	}
+	public getToken() {
+		return this.token
+	}
+	public async getCookie() {
 		const response = await this.request({
 			uri: this.url.origin + '/__getcookie',
 			method: 'GET'
@@ -143,9 +158,11 @@ export default class SailsClient {
 			'cookie': this.cookies,
 			//'Authorization': this.auth && this.auth.token
 		}
+
 		this.io.sails.url = this.url.origin
 		this.io.sails.autoConnect = false;
 		this.io.sails.reconnection = this.reconnect
+		this.io.sails.environment = 'production'
 	}
 
 	isConnected() {
@@ -190,6 +207,11 @@ export default class SailsClient {
 			if (typeof params.headers === 'undefined') {
 				params.headers = {}
 			}
+			const token = this.getToken()
+			if (typeof token !== 'undefined') {
+				params.headers['Authorization'] = token
+			}
+	
 			try {
 				this.socket.request({
 					method: params.method || 'GET',
@@ -205,15 +227,16 @@ export default class SailsClient {
 		})
 	}
 
-	xhrRequest(params) {
-		return new Promise((resolve, reject) => {
-			request(params, function (err, response, body) {
-				if (err)
-					return reject(err)
-				else {
-					return resolve(response)
-				}
-			})
-		})
+	public async xhrRequest(params:any) {
+		if (typeof params.headers == 'undefined') {
+			params.headers = {}
+		}
+		const token = this.getToken()
+		if (typeof token !== 'undefined') {
+			params.headers['Authorization'] = `Bearer ${token}`
+		}
+		params.resolveWithFullResponse = true
+		const result = await rp(params)
+		return result
 	}
 }

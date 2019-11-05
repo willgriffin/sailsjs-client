@@ -12,9 +12,17 @@ export default class SailsClient {
         event: string;
         method: any;
     }>;
-    constructor(args: any);
+    token: string;
+    constructor(args: {
+        url?: string;
+        protocol?: string;
+        auth?: any;
+        token?: string;
+    });
     init(): Promise<void>;
-    on(event: any, method: any): void;
+    on(event: string, method: Function): void;
+    setToken(token: string): void;
+    getToken(): string;
     getCookie(): Promise<void>;
     authenticate(auth?: {
         endpoint: string;
@@ -42,5 +50,5 @@ export default class SailsClient {
     connect(): Promise<unknown>;
     disconnect(): Promise<unknown>;
     socketRequest(params: any): Promise<unknown>;
-    xhrRequest(params: any): Promise<unknown>;
+    xhrRequest(params: any): Promise<any>;
 }

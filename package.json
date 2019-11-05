@@ -28,6 +28,7 @@
   "homepage": "https://github.com/willgriffin/sailsjs-client#readme",
   "dependencies": {
     "request": "^2.88.0",
+    "request-promise": "^4.2.4",
     "sails-hook-sockets": "^2.0.0",
     "sails.io.js": "^1.2.1",
     "socket.io-client": "^2.3.0",
