@@ -141,7 +141,7 @@ export default class SailsClient {
 
 	async request(params) {
 		let response
-		if (this.isConnected() === true) {
+		if (typeof params.formData === 'undefined' && this.isConnected() === true) {
 			response = await this.socketRequest(params)
 		} else {
 			response = await this.xhrRequest(params)
@@ -234,6 +234,10 @@ export default class SailsClient {
 		const token = this.getToken()
 		if (typeof token !== 'undefined') {
 			params.headers['Authorization'] = `Bearer ${token}`
+		}
+		if (params.method.toLowerCase() === 'get') {
+			params.qs = params.body
+			delete(params.body)
 		}
 		params.resolveWithFullResponse = true
 		const result = await rp(params)
