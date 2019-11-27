@@ -51,6 +51,7 @@ describe('client.spec.js', () => {
 					method: req.method,
 					isSocket: req.isSocket,
 					headers: req.headers,
+					params: req.allParams()
 				})
 			}
 			
@@ -101,6 +102,7 @@ describe('client.spec.js', () => {
 			
 			app.post('/api/socket/blast', (req, res) => {
 				app.sockets.blast('message', req.param('message'));
+				res.json(req.param('message'))
 			})
 			
 			app.post('/api/auth/token', (req, res) => {
@@ -133,18 +135,38 @@ describe('client.spec.js', () => {
 		await api.disconnect()
 		await app.lower()
 	})
+
 	
-	it('should able to make an xhr request', async () => {
+	it('should able to make a post xhr request with params', async () => {
+		const response = await api.xhrRequest({
+			uri: 'http://localhost:13666/api/request',
+			method: 'POST',
+			body: {
+				foo: 'bar'
+			},
+			json: true
+		})
+		expect(response.body.params.foo).to.equal('bar')
+		expect(!response.body.isSocket).to.equal(true)
+		expect(response.body.method).to.equal('POST')
+	})
+	
+
+	it('should able to make a get xhr request with params', async () => {
 		const response = await api.xhrRequest({
 			uri: 'http://localhost:13666/api/request',
 			method: 'GET',
-			// body: params,
+			body: {
+				foo: 'bar'
+			},
 			json: true
 		})
+		expect(response.body.params.foo).to.equal('bar')
 		expect(!response.body.isSocket).to.equal(true)
 		expect(response.body.method).to.equal('GET')
 	})
 	
+
 
 	it.skip('should able to upload a file', async () => {
 		const response = await api.request({
@@ -206,6 +228,8 @@ describe('client.spec.js', () => {
 				expect(data).to.equal('foo')
 				if (data === 'foo') {
 					resolve()
+				} else {
+					reject('invalid message')
 				}
 			})
 			api.connect().then(() => {

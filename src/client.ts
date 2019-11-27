@@ -147,6 +147,8 @@ export default class SailsClient {
 			response = await this.xhrRequest(params)
 		}
 		if (response.statusCode !== 200) {
+			console.log('params', params)
+			console.log('response', response)
 			throw new Error(`[${response.statusCode}] ${response.body}`);
 		}
 		return response
