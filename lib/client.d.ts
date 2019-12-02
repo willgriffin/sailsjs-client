@@ -40,7 +40,8 @@ export default class SailsClient {
         response: any;
     }>;
     get(path: string, params: object): Promise<any>;
-    post(path: string, params: object): Promise<any>;
+    post(path: string, params: object, options?: object): Promise<any>;
+    optionsFormdata(options: any): {};
     put(path: string, params: object): Promise<any>;
     patch(path: string, params: object): Promise<any>;
     delete(path: string, params: object): Promise<any>;

@@ -62,26 +62,20 @@ describe('client.spec.js', () => {
 			
 			const fileAdapter = SkipperDisk(/* optional opts */);
 			app.post('/api/upload', (req, res) => {
-				const fileAdapter = SkipperDisk(/* optional opts */);
-			    fileAdapter.read('file')
-					.on('error', function (err){
-					return res.serverError(err);
-					})
-					.pipe(res);
-				// req.file('file').upload({
-				// 	// don't allow the total upload size to exceed ~10MB
-				// 	maxBytes: 10000000
-				// }, function whenDone(err, uploadedFiles) {
-				// 	if (err) {
-				// 		return res.serverError(err)
-				// 	}
+				req.file('uploaded').upload({
+					// don't allow the total upload size to exceed ~10MB
+					maxBytes: 10000000
+				}, function whenDone(err, uploadedFiles) {
+					if (err) {
+						return res.serverError(err)
+					}
 					
-				// 	// If no files were uploaded, respond with an error.
-				// 	if (uploadedFiles.length === 0) {
-				// 		return res.badRequest('No file was uploaded')
-				// 	}
-				// 	//res.json(req.param('file'))
-				// })				
+					// If no files were uploaded, respond with an error.
+					if (uploadedFiles.length === 0) {
+						return res.badRequest('No file was uploaded')
+					}
+					res.json(uploadedFiles)
+				})
 			})
 			
 			
@@ -151,7 +145,6 @@ describe('client.spec.js', () => {
 		expect(response.body.method).to.equal('POST')
 	})
 	
-
 	it('should able to make a get xhr request with params', async () => {
 		const response = await api.xhrRequest({
 			uri: 'http://localhost:13666/api/request',
@@ -166,9 +159,7 @@ describe('client.spec.js', () => {
 		expect(response.body.method).to.equal('GET')
 	})
 	
-
-
-	it.skip('should able to upload a file', async () => {
+	it('should able to upload a file', async () => {
 		const response = await api.request({
 			uri: 'http://localhost:13666/api/upload',
 			method: 'post',
@@ -176,8 +167,8 @@ describe('client.spec.js', () => {
 			json: true,
 			formData: {
 				// Like <input type="file" name="file">
-				file: {
-					value: fs.createReadStream('README.md'),
+				uploaded: {
+					value: fs.createReadStream(__dirname+'/client.spec.ts'),
 					options: {
 						filename: 'client.spec.ts',
 						contentType: 'text/plain'
@@ -185,11 +176,32 @@ describe('client.spec.js', () => {
 				}
 			},
 		})
-		console.log(response)
-		// expect(!response.body.isSocket).to.equal(true)
-		// expect(response.body.method).to.equal('GET')
+		expect(response.body[0].filename).to.equal('client.spec.ts')
+		expect(fs.existsSync(response.body[0].fd)).to.equal(true)
 	})
 	
+	it('should able to upload files passed as strings', async () => {
+		const response = await api.post('upload', {foo: 'bar'}, {
+			files: [__dirname+'/client.spec.ts']
+		})
+		expect(response[0].filename).to.equal('client.spec.ts')
+		expect(fs.existsSync(response[0].fd)).to.equal(true)
+	})
+
+
+	it('should able to upload files passed as objects to post', async () => {
+		const response = await api.post('upload', {}, {
+			files: [{
+				file: __dirname+'/client.spec.ts',
+				filename: 'herp.txt',
+				contentType: 'text/plain'
+			}]
+		})
+		expect(response[0].filename).to.equal('herp.txt')
+		expect(fs.existsSync(response[0].fd)).to.equal(true)
+	})
+
+
 
 	it('should be able to make a post request whether the socket is connected or not', async () => {
 		

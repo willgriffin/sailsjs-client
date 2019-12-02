@@ -3,6 +3,8 @@ import * as SocketIo from 'socket.io-client'
 import * as SailsIo from 'sails.io.js'
 import { URL } from 'url';
 
+import * as fs from 'fs'
+import * as path from 'path'
 
 export default class SailsClient {
 
@@ -99,16 +101,54 @@ export default class SailsClient {
 		return response.body
 	}
 	
-	async post(path: string, params: object) {
+	async post(path: string, params: object, options?: object) {
+		let formData = options && this.optionsFormdata(options)
+		if (formData) {
+			formData = Object.assign(formData, params) // errors if both body and formData are set
+			params = undefined
+		}
 		const response = await this.request({
 			uri: this.url.href + path,
 			method: 'POST',
 			body: params,
-			json: true
+			json: true,
+			formData: options && this.optionsFormdata(options) || undefined
 		})
 		return response.body
 	}
-
+	optionsFormdata(options) {
+		const out = {}
+		if (options.files) {
+			for (let x in options.files) {
+				let fieldname = 'uploaded'
+				const file = options.files[x]
+				const fileOut:{
+					value?: any
+					options?: {
+						filename: string
+						contentType?: string
+					}
+				} = {}
+				if (typeof file === 'string') {
+					fileOut.options = {
+						filename: path.basename(file)
+					}
+					fileOut.value = fs.createReadStream(file)
+				} else if (typeof file === 'object') {
+					fileOut.value = fs.createReadStream(file.file)
+					fileOut.options = {
+						filename: file.filename || path.basename(file.file)
+					}
+				}
+				if (options.fieldname) {
+					fieldname = options.fieldname
+					delete options.fieldname
+				}
+				out[fieldname] = fileOut
+			}
+		}
+		return out
+	}
 	async put(path: string, params: object) {
 		const response = await this.request({
 			uri: this.url.href + path,
