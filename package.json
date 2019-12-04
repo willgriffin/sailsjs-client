@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/willgriffin/sailsjs-client#readme",
   "dependencies": {
+    "mime-types": "^2.1.25",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "sails-hook-sockets": "^2.0.0",
