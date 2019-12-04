@@ -39,12 +39,12 @@ export default class SailsClient {
         password: string;
         response: any;
     }>;
-    get(path: string, params: object): Promise<any>;
-    post(path: string, params: object, options?: object): Promise<any>;
+    get(endpoint: string, params: object): Promise<any>;
+    post(endpoint: string, params: object): Promise<any>;
     optionsFormdata(options: any): {};
-    put(path: string, params: object): Promise<any>;
-    patch(path: string, params: object): Promise<any>;
-    delete(path: string, params: object): Promise<any>;
+    put(endpoint: string, params: object): Promise<any>;
+    patch(endpoint: string, params: object): Promise<any>;
+    delete(endpoint: string, params: object): Promise<any>;
     request(params: any): Promise<any>;
     socketInit(): Promise<void>;
     isConnected(): any;

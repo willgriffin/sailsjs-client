@@ -2,12 +2,14 @@
 import * as Sails from 'sails'
 import * as SHSockets from 'sails-hook-sockets'
 import * as jwt from 'jsonwebtoken'
-import { expect } from 'chai';  // Using Expect style
+import { expect } from 'chai'  // Using Expect style
 import SailsClient from '../../src/client'
 import * as fs from 'fs'
+import * as path from 'path'
 
-import * as SkipperDisk from 'skipper-disk';
-let api, app;
+import * as SkipperDisk from 'skipper-disk'
+import { pathToFileURL } from 'url'
+let api, app
 
 describe('client.spec.js', () => {
 	
@@ -60,7 +62,7 @@ describe('client.spec.js', () => {
 			app.put('/api/request', requestEndpoint)
 			app.delete('/api/request', requestEndpoint)
 			
-			const fileAdapter = SkipperDisk(/* optional opts */);
+			const fileAdapter = SkipperDisk(/* optional opts */)
 			app.post('/api/upload', (req, res) => {
 				req.file('uploaded').upload({
 					// don't allow the total upload size to exceed ~10MB
@@ -81,21 +83,21 @@ describe('client.spec.js', () => {
 			
 			app.post('/api/socket/join', (req, res) => {
 				if (!req.isSocket) {
-					return res.badRequest();
+					return res.badRequest()
 				}
-				const roomName = req.param('room');
+				const roomName = req.param('room')
 				// sails.sockets.join(req, roomName, (err) => {
 				// 	if (err) {
-				// 		return res.serverError(err);
+				// 		return res.serverError(err)
 				// 	}
 				// 	return res.json({
 				// 		message: 'Joined ' + roomName
-				// 	});
-				// });
+				// 	})
+				// })
 			})
 			
 			app.post('/api/socket/blast', (req, res) => {
-				app.sockets.blast('message', req.param('message'));
+				app.sockets.blast('message', req.param('message'))
 				res.json(req.param('message'))
 			})
 			
@@ -122,8 +124,8 @@ describe('client.spec.js', () => {
 			})
 			return api.init()
 		})
-		return ok;
-	});
+		return ok
+	})
 	
 	after(async () => {
 		await api.disconnect()
@@ -180,28 +182,13 @@ describe('client.spec.js', () => {
 		expect(fs.existsSync(response.body[0].fd)).to.equal(true)
 	})
 	
-	it('should able to upload files passed as strings', async () => {
-		const response = await api.post('upload', {foo: 'bar'}, {
-			files: [__dirname+'/client.spec.ts']
+	it('should able to upload files passed as strings via post method', async () => {
+		const response = await api.post('upload', {
+			uploaded: `file:/${__dirname}/client.spec.ts`
 		})
 		expect(response[0].filename).to.equal('client.spec.ts')
 		expect(fs.existsSync(response[0].fd)).to.equal(true)
 	})
-
-
-	it('should able to upload files passed as objects to post', async () => {
-		const response = await api.post('upload', {}, {
-			files: [{
-				file: __dirname+'/client.spec.ts',
-				filename: 'herp.txt',
-				contentType: 'text/plain'
-			}]
-		})
-		expect(response[0].filename).to.equal('herp.txt')
-		expect(fs.existsSync(response[0].fd)).to.equal(true)
-	})
-
-
 
 	it('should be able to make a post request whether the socket is connected or not', async () => {
 		
@@ -239,9 +226,9 @@ describe('client.spec.js', () => {
 			api.on('message', (data) => {
 				expect(data).to.equal('foo')
 				if (data === 'foo') {
-					resolve()
+					resolve(data)
 				} else {
-					reject('invalid message')
+					reject(new Error('invalid message'))
 				}
 			})
 			api.connect().then(() => {

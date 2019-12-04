@@ -1,10 +1,11 @@
 import * as rp from 'request-promise'
 import * as SocketIo from 'socket.io-client'
 import * as SailsIo from 'sails.io.js'
-import { URL } from 'url';
+import { URL } from 'url'
 
 import * as fs from 'fs'
 import * as path from 'path'
+import * as mimeTypes from 'mime-types'
 
 export default class SailsClient {
 
@@ -26,7 +27,7 @@ export default class SailsClient {
 	}) {
 		this.url = new URL(args.url || 'http://localhost:1337/api/')
 		if (this.url.protocol === null) {
-			throw new Error('Invalid url');
+			throw new Error('Invalid url')
 		}
 		if (args.auth) {
 			this.auth = {
@@ -40,8 +41,8 @@ export default class SailsClient {
 		if (args.token) {
 			this.setToken(args.token)
 		}
-		this.reconnect = true;
-		this.listeners = [];
+		this.reconnect = true
+		this.listeners = []
 	}
 	
 	async init() {
@@ -91,9 +92,9 @@ export default class SailsClient {
 		return auth
 	}
 
-	async get(path: string, params: object) {
+	async get(endpoint: string, params: object) {
 		const response = await this.request({
-			uri: this.url.href + path,
+			uri: this.url.href + endpoint,
 			method: 'GET',
 			body: params,
 			json: true
@@ -101,18 +102,37 @@ export default class SailsClient {
 		return response.body
 	}
 	
-	async post(path: string, params: object, options?: object) {
-		let formData = options && this.optionsFormdata(options)
-		if (formData) {
-			formData = Object.assign(formData, params) // errors if both body and formData are set
-			params = undefined
+	async post(endpoint: string, params: object) {
+		let formData = {}
+		let body = {}
+		for (let param in params) {
+			if (params[param].substr(0,6) === 'file:/') {
+				const file = params[param].substr(6, params[param].length)
+				if (fs.existsSync(file) === false) {
+					throw new Error(`File not found ${file}`)
+				}
+				formData[param] = {
+					value: fs.createReadStream(file),
+					options: {
+						filename: path.basename(file)
+					}
+				}
+			} else {
+				body[param] = params[param]
+			}
+		}
+		if (Object.keys(formData).length > 0) {
+			formData = Object.assign(formData, body)
+			body = undefined
+		} else {
+			formData = undefined
 		}
 		const response = await this.request({
-			uri: this.url.href + path,
+			uri: this.url.href + endpoint,
 			method: 'POST',
-			body: params,
-			json: true,
-			formData: options && this.optionsFormdata(options) || undefined
+			body,
+			formData,
+			json: true
 		})
 		return response.body
 	}
@@ -146,12 +166,13 @@ export default class SailsClient {
 				}
 				out[fieldname] = fileOut
 			}
+			console.log(out)
 		}
 		return out
 	}
-	async put(path: string, params: object) {
+	async put(endpoint: string, params: object) {
 		const response = await this.request({
-			uri: this.url.href + path,
+			uri: this.url.href + endpoint,
 			method: 'PUT',
 			body: params,
 			json: true
@@ -159,9 +180,9 @@ export default class SailsClient {
 		return response.body
 	}
 
-	async patch(path: string, params: object) {
+	async patch(endpoint: string, params: object) {
 		const response = await this.request({
-			uri: this.url.href + path,
+			uri: this.url.href + endpoint,
 			method: 'PATCH',
 			body: params,
 			json: true
@@ -169,9 +190,9 @@ export default class SailsClient {
 		return response.body
 	}
 
-	async delete(path: string, params: object) {
+	async delete(endpoint: string, params: object) {
 		const response = await this.request({
-			uri: this.url.href + path,
+			uri: this.url.href + endpoint,
 			method: 'DELETE',
 			body: params,
 			json: true
@@ -187,7 +208,7 @@ export default class SailsClient {
 			response = await this.xhrRequest(params)
 		}
 		if (response.statusCode !== 200) {
-			throw new Error(`[${response.statusCode}] ${response.body}`);
+			throw new Error(`[${response.statusCode}] ${response.body}`)
 		}
 		return response
 	}
@@ -200,7 +221,7 @@ export default class SailsClient {
 		}
 
 		this.io.sails.url = this.url.origin
-		this.io.sails.autoConnect = false;
+		this.io.sails.autoConnect = false
 		this.io.sails.reconnection = this.reconnect
 		this.io.sails.environment = 'production'
 	}
