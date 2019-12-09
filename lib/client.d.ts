@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { URL } from 'url';
 export default class SailsClient {
+    debug: boolean;
     url: URL;
     auth: any;
     reconnect: boolean;
@@ -18,6 +19,7 @@ export default class SailsClient {
         protocol?: string;
         auth?: any;
         token?: string;
+        debug?: boolean;
     });
     init(): Promise<void>;
     on(event: string, method: Function): void;

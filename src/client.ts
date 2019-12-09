@@ -9,6 +9,7 @@ import * as mimeTypes from 'mime-types'
 
 export default class SailsClient {
 
+	debug: boolean
 	url: URL
 	auth: any
 	reconnect: boolean
@@ -20,11 +21,13 @@ export default class SailsClient {
 	token: string
 
 	constructor(args: {
-		url?: string,
-		protocol?: string,
-		auth?: any,
+		url?: string
+		protocol?: string
+		auth?: any
 		token?: string
+		debug?: boolean
 	}) {
+		this.debug = args.debug || false
 		this.url = new URL(args.url || 'http://localhost:1337/api/')
 		if (this.url.protocol === null) {
 			throw new Error('Invalid url')
@@ -103,10 +106,11 @@ export default class SailsClient {
 	}
 	
 	async post(endpoint: string, params: object) {
+		console.log('post')
 		let formData = {}
 		let body = {}
 		for (let param in params) {
-			if (params[param].substr(0,6) === 'file:/') {
+			if (typeof params[param] == 'string' && params[param].substr(0,6) === 'file:/') {
 				const file = params[param].substr(6, params[param].length)
 				if (fs.existsSync(file) === false) {
 					throw new Error(`File not found ${file}`)
@@ -274,12 +278,15 @@ export default class SailsClient {
 			}
 	
 			try {
-				this.socket.request({
+				const requestParams = {
 					method: params.method || 'GET',
 					url: params.uri,
 					data: params.body,
 					headers: params.headers
-				}, function (body, jwr) {
+				}
+				this.debuglog("============================== SOCKET REQUEST\n", requestParams)
+				this.socket.request(requestParams, function (body, jwr) {
+					this.debuglog("============================== SOCKET REQUEST RESULT\n", requestParams)
 					return resolve(jwr)
 				})
 			} catch (err) {
@@ -301,7 +308,15 @@ export default class SailsClient {
 			delete(params.body)
 		}
 		params.resolveWithFullResponse = true
+		this.debuglog("============================== XHR REQUEST\n", params)
 		const result = await rp(params)
+		this.debuglog("============================== XHR REQUEST RESULT\n", params)
 		return result
+	}
+
+	private debuglog(...args:any[]) {
+		if (this.debug) {
+			console.log(...args)
+		}
 	}
 }
