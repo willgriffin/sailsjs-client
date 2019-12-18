@@ -272,7 +272,8 @@ export default class SailsClient {
 			}
 			const token = this.getToken()
 			if (typeof token !== 'undefined') {
-				params.headers['Authorization'] = token
+				//params.headers['Authorization'] = token
+				params.body.token = token
 			}
 	
 			try {
