@@ -106,7 +106,6 @@ export default class SailsClient {
 	}
 	
 	async post(endpoint: string, params: object) {
-		console.log('post')
 		let formData = {}
 		let body = {}
 		for (let param in params) {
@@ -170,7 +169,6 @@ export default class SailsClient {
 				}
 				out[fieldname] = fileOut
 			}
-			console.log(out)
 		}
 		return out
 	}
