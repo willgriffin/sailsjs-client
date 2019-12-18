@@ -54,4 +54,5 @@ export default class SailsClient {
     disconnect(): Promise<unknown>;
     socketRequest(params: any): Promise<unknown>;
     xhrRequest(params: any): Promise<any>;
+    private debuglog;
 }
