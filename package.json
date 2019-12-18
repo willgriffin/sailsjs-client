@@ -1,6 +1,6 @@
 {
   "name": "sailsjs-client",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "api client with websocket support",
   "main": "lib/client.js",
   "types": "lib/client.d.ts",
