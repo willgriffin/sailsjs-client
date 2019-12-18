@@ -283,8 +283,9 @@ export default class SailsClient {
 					headers: params.headers
 				}
 				this.debuglog("============================== SOCKET REQUEST\n", requestParams)
+				const self = this
 				this.socket.request(requestParams, function (body, jwr) {
-					this.debuglog("============================== SOCKET REQUEST RESULT\n", requestParams)
+					self.debuglog("============================== SOCKET REQUEST RESULT\n", requestParams)
 					return resolve(jwr)
 				})
 			} catch (err) {
