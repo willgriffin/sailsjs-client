@@ -217,6 +217,7 @@ export default class SailsClient {
 
 	async socketInit() {
 		this.io = new SailsIo(SocketIo)
+
 		this.io.sails.initialConnectionHeaders = {
 			'cookie': this.cookies,
 			//'Authorization': this.auth && this.auth.token
@@ -308,7 +309,7 @@ export default class SailsClient {
 			delete(params.body)
 		}
 		params.resolveWithFullResponse = true
-		this.debuglog("============================== XHR REQUEST\n", params)
+		this.debuglog("==================-============ XHR REQUEST\n", params)
 		const result = await rp(params)
 		this.debuglog("============================== XHR REQUEST RESULT\n", params)
 		return result
