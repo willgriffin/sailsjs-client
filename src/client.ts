@@ -216,8 +216,11 @@ export default class SailsClient {
 	}
 
 	async socketInit() {
-		this.io = new SailsIo(SocketIo)
-
+		if (SocketIo.sails) {
+			this.io = SocketIo
+		} else {
+				this.io = SailsIo(SocketIo);
+		}
 		this.io.sails.initialConnectionHeaders = {
 			'cookie': this.cookies,
 			//'Authorization': this.auth && this.auth.token
